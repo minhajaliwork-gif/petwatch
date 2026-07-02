@@ -1,0 +1,178 @@
+
+<?php require('template/header.phtml'); ?>
+
+<div class="container mt-4">
+    <h1 class="mb-3">Sightings</h1>
+
+    <h3>Geolocation Example</h3>
+
+    <button onclick="getLocation()">Get My Location</button>
+
+    <p id="status">Click on the button to get your location</p>
+
+
+
+    <!-- Search & Filters -->
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Search by pet name or note"
+                   value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+        </div>
+
+        <div class="col-md-3">
+            <select name="type" class="form-select">
+                <option value="">Any Type</option>
+                <?php foreach ($view->types as $type): ?>
+                <option value="<?= htmlspecialchars($type) ?>" <?= ($_GET['type'] ?? '') === $type ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($type) ?>
+
+                </option>
+
+                <?php endforeach; ?>
+
+            </select>
+
+        </div>
+
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">Any status</option>
+                <?php foreach ($view->statuses as $status): ?>
+                <option value="<?= htmlspecialchars($status) ?>" <?= ($_GET['status'] ?? '') === $status ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($status) ?>
+                </option>
+                <?php endforeach; ?>
+
+            </select>
+
+        </div>
+
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-secondary w-100">Search</button>
+
+        </div>
+
+    </form>
+
+    <p><strong><?= $view->dbMessage ?? '' ?></strong></p>
+
+    <!-- Sighting Cards -->
+
+    <div class="row">
+        <?php if (!empty($view->sightings)): ?>
+            <?php foreach ($view->sightings as $sighting): ?>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= htmlspecialchars($sighting->getNote()) ?></h5>
+                            <p class="card-text">
+                                <strong>Pet:</strong> <?= htmlspecialchars($sighting->getPetName()) ?>
+                                (<?= htmlspecialchars($sighting->getPetType()) ?>, <?= htmlspecialchars($sighting->getPetStatus()) ?>)<br>
+                                <strong>Seen by:</strong> <?= htmlspecialchars($sighting->getUsername()) ?><br>
+                                <strong>Latitude:</strong> <?= htmlspecialchars($sighting->getLatitude()) ?><br>
+                                <strong>Longitude:</strong> <?= htmlspecialchars($sighting->getLongitude()) ?><br>
+                                <strong>Date:</strong> <?= htmlspecialchars($sighting->getCreatedAt()) ?>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>No sightings found.</p>
+    <?php endif; ?>
+
+    </div>
+
+    <!-- Add Sightings (For browsing users) -->
+    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'user'): ?>
+        <div class="card mt-5 p-4">
+            <h4>Add a new sighting</h4>
+            <form method="post">
+                <input type="hidden" name="add_sighting" value="1">
+
+                <!-- Drop down for Pet Name and Type -->
+                <div class="mb-3">
+                    <label class="form-label">Pet:</label>
+                    <select name="pet_id" class="form-select" required>
+                        <option value="">Select a pet...</option>
+                        <?php foreach ($view->pets as $pet): ?>
+                        <option value="<?= htmlspecialchars($pet['id']) ?>">
+                            <?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['type']) ?>)
+
+                        </option>
+                    <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Note:</label>
+                    <textarea name="note" class="form-control" required></textarea>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md mb-3">
+                        <label class="form-label">Latitude:</label>
+                        <input type="text" name="latitude" class="form-control">
+
+
+                    </div>
+
+                    <div class="col-md mb-3">
+                        <label class="form-label">Longitude:</label>
+                        <input type="text" name="longitude" class="form-control">
+
+
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-success">Add Sighting</button>
+
+            </form>
+
+        </div>
+
+    <?php endif; ?>
+
+</div>
+
+<script>
+    const status = document.getElementById("status");
+
+    function getLocation(){
+        if (!navigator.geolocation){
+            status.textContent = "Geolocation is not supported by your browser";
+        }else {
+            status.textContent = "Getting location...";
+            navigator.geolocation.getCurrentPosition(success, errorCallback);
+        }
+    }
+
+    function success(position){
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        status.textContent = "Latitude: " + lat + " | Longitude: " + lng;
+    }
+
+
+    function errorCallback(error){
+        status.textContent = "Error (" + error.code + "): " + error.message;
+    }
+
+</script>
+
+
+
+<?php require('template/footer.phtml'); ?>
+

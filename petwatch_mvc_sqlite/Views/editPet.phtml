@@ -1,0 +1,33 @@
+
+<?php require __DIR__ . '/template/header.phtml'; ?>
+<h2 class="h4 mb-3">Edit Pet</h2>
+<?php if (!empty($err)): ?><div class="alert alert-danger py-2"><?= htmlspecialchars($err) ?></div><?php endif; ?>
+<form method="post" action="/editPet.php?id=<?= (int)$pet['id'] ?>" autocomplete="off">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input class="form-control" name="name" value="<?= htmlspecialchars($pet['name']) ?>" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Type</label>
+    <select class="form-select" name="type" required>
+      <?php foreach (['Dog','Cat','Parrot'] as $t): ?>
+        <option value="<?= $t ?>" <?= $pet['type']===$t?'selected':'' ?>><?= $t ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Status</label>
+    <select class="form-select" name="status">
+      <?php foreach (['Missing','Found'] as $s): ?>
+        <option value="<?= $s ?>" <?= $pet['status']===$s?'selected':'' ?>><?= $s ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea class="form-control" name="description" rows="3"><?= htmlspecialchars($pet['description']) ?></textarea>
+  </div>
+  <button class="btn btn-success">Save</button>
+  <a class="btn btn-secondary" href="/ownerPets.php">Cancel</a>
+</form>
+<?php require __DIR__ . '/template/footer.phtml'; ?>

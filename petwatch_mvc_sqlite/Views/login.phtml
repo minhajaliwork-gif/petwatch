@@ -1,0 +1,27 @@
+
+<?php require __DIR__ . '/template/header.phtml'; ?>
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="h5 mb-3">Login</h3>
+        <?php if (!empty($view_err)): ?>
+          <div class="alert alert-danger py-2"><?= htmlspecialchars($view_err) ?></div>
+        <?php endif; ?>
+        <form method="post" action="/login.php" autocomplete="off">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input class="form-control" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" required>
+          </div>
+          <button class="btn btn-primary">Login</button>
+        </form>
+        <p class="text-muted mt-3 small">Test accounts will be seeded via <code>seed.php</code>: Lee (owner), Zara (user).</p>
+      </div>
+    </div>
+  </div>
+</div>
+<?php require __DIR__ . '/template/footer.phtml'; ?>

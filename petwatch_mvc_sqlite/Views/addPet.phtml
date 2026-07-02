@@ -1,0 +1,29 @@
+
+<?php require __DIR__ . '/template/header.phtml'; ?>
+<h2 class="h4 mb-3">Add Pet</h2>
+<?php if (!empty($err)): ?><div class="alert alert-danger py-2"><?= htmlspecialchars($err) ?></div><?php endif; ?>
+<form method="post" action="/addPet.php" autocomplete="off">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input class="form-control" name="name" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Type</label>
+    <select class="form-select" name="type" required>
+      <option>Dog</option><option>Cat</option><option>Parrot</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Status</label>
+    <select class="form-select" name="status">
+      <option>Missing</option><option>Found</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea class="form-control" name="description" rows="3"></textarea>
+  </div>
+  <button class="btn btn-success">Save</button>
+  <a class="btn btn-secondary" href="/ownerPets.php">Cancel</a>
+</form>
+<?php require __DIR__ . '/template/footer.phtml'; ?>

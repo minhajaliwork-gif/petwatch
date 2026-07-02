@@ -1,0 +1,141 @@
+
+<?php require('template/header.phtml'); ?>
+
+<!-- Search input triggers live filtering -->
+<div class="container mt-4">
+    <h1>Map View</h1>
+
+    <input type="text" id="search" placeholder="Search pets..." class="form-control mb-3" onkeyup="loadMarkers()">
+
+    <!-- Map Container-->
+    <div id="map" style="height: 500px;"></div>
+
+</div>
+
+<script>
+    //Global variables for map and user marker
+    var map ;
+    var userMarker;
+
+    //Initialise the map with the given latitude and longitude
+    function initMap(lat, lng){
+
+        //Remove existing map if reloading
+
+        if (map) {
+            map.remove();
+        }
+
+        //Create map and set view
+        map = L.map('map').setView([lat, lng], 13);
+
+        //Fix for map and rendering issues
+        setTimeout(() => {
+            map.invalidateSize();
+            }, 100);
+
+
+        //Load OpenStreetMap tiles
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        //Add marker for user location
+         userMarker = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup("You are here")
+            .openPopup();
+
+        //Load markers from database
+        loadMarkers();
+
+    }
+
+    //Function to load and filter markers dynamically
+    function loadMarkers(){
+        let search = document.getElementById("search").value;
+
+        //Remove existing markers (except user marker)
+        map.eachLayer(function(layer){
+            if (layer instanceof L.Marker && layer !== userMarker){
+                map.removeLayer(layer);
+            }
+        });
+
+        //Create AJAX request
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function(){
+            if (this.readyState == 4 && this.status == 200){
+                console.log("Markers response:", this.responseText);
+
+                //Parse JSON response from server
+                let data = JSON.parse(this.responseText);
+
+                //Loop through each sighting
+                data.forEach(function(s){
+
+                    //Format day for display
+                    let d = new Date(s.created_at.replace(" ", "T"));
+                    d.setHours(d.getHours() + 1);
+
+                    let date = d.toLocaleString("en-GB");
+
+                    //Create popup content
+                    let popupText = `
+                        <b>Pet:</b> ${s.pet_name}<br>
+                        <b>Note:</b> ${s.note}<br>
+                        <b>Date:</b> ${date}<br>
+
+                    `;
+
+                    //Add marker to map
+                    L.marker([parseFloat(s.latitude), parseFloat(s.longitude)])
+                        .addTo(map)
+                        .bindPopup(popupText);
+
+                });
+
+
+            }
+        }; //Send GET request with search parameter
+        xhr.open("GET", "./markers.php?search=" + encodeURIComponent(search), true);
+        xhr.send();
+
+    }
+
+    //Get users location using browser geolocation
+    if (navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(
+            function(position){
+                console.log("SUCCESS:", position.coords);
+
+
+                initMap(position.coords.latitude, position.coords.longitude);
+            },
+
+            function(error) {
+                console.log("Error:", error)
+
+                //Fallback location (Manchester)
+                initMap(53.48, -2.24);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+
+        );
+
+    } else {
+        initMap(53.48, -2.24);
+    }
+
+
+
+
+</script>
+
+<?php require('template/footer.phtml'); ?>
+

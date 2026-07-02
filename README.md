@@ -62,9 +62,8 @@ PetWatch is a full-stack web application developed to help users report, manage 
 
 ---
 
-##Module: Client-Server-Systems
-## Grade
+## Module & Grade
 
-65%
+Client-Server-Systems: 65%
 
 ---

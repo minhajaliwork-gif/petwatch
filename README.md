@@ -1,1 +1,1 @@
-# petwatch
+PetWatch is a full-stack web application developed to help users report, manage and locate lost pets. The application allows users to register pets, record sightings on an interactive map and manage information through a database-driven CRUD system. It was developed using PHP and the MVC architectural pattern to separate the application's data, business logic and user interface.
